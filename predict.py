@@ -581,9 +581,9 @@ def main():
     
     st.markdown("---")
     
-    # Sidebar untuk navigasi
+    # Sidebar untuk navigasi — "Analisis Penjualan" DIHAPUS
     st.sidebar.title("Navigasi")
-    page = st.sidebar.selectbox("Pilih Halaman", ["Dashboard", "Prediksi Stok", "Analisis Penjualan", "Tentang"])
+    page = st.sidebar.selectbox("Pilih Halaman", ["Dashboard", "Prediksi Stok", "Tentang"])
     
     # Cek data
     if not Path(DATA_PATH).exists():
@@ -734,59 +734,6 @@ def main():
                 # Rekomendasi pemesanan
                 st.markdown("<h3 class='fade-in'>Rekomendasi Pemesanan</h3>", unsafe_allow_html=True)
                 st.info(f"Disarankan untuk memesan minimal **{total_stok:,.0f} unit** hoodie untuk memenuhi permintaan dalam {n_bulan} bulan ke depan dengan safety stock {safety_pct}%.")
-    
-    elif page == "Analisis Penjualan":
-        st.markdown("<h2 class='fade-in'>Analisis Penjualan</h2>", unsafe_allow_html=True)
-        
-        # Pilihan analisis - Korelasi Fitur sudah dihapus
-        analisis_type = st.selectbox("Pilih Jenis Analisis", ["Penjualan per Bulan", "Penjualan per Hari"])
-        
-        if analisis_type == "Penjualan per Bulan":
-            df_bulanan = df.copy()
-            df_bulanan['Bulan'] = df_bulanan['Tanggal_Transaksi'].dt.to_period('M')
-            df_bulanan = df_bulanan.groupby('Bulan').agg({
-                'Produk_Terjual': 'sum',
-                'Pembeli': 'sum',
-                'Pesanan': 'sum'
-            }).reset_index()
-            df_bulanan['Bulan'] = df_bulanan['Bulan'].astype(str)
-            
-            st.markdown("<h3 class='fade-in'>Penjualan per Bulan</h3>", unsafe_allow_html=True)
-            st.dataframe(df_bulanan)
-            
-            fig, ax = plt.subplots(figsize=(10, 5))
-            ax.bar(df_bulanan['Bulan'], df_bulanan['Produk_Terjual'], color='#2E86AB')
-            plt.title('Total Penjualan per Bulan', fontweight='bold')
-            plt.xlabel('Bulan')
-            plt.ylabel('Jumlah Terjual')
-            plt.xticks(rotation=45)
-            ax.set_facecolor('#FFFFFF')
-            plt.gcf().set_facecolor('#FFFFFF')
-            plt.tight_layout()
-            st.pyplot(fig)
-        
-        elif analisis_type == "Penjualan per Hari":
-            df['Hari'] = df['Tanggal_Transaksi'].dt.day_name()
-            df_harian = df.groupby('Hari')['Produk_Terjual'].mean().reset_index()
-            
-            # Urutkan hari
-            hari_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-            df_harian['Hari'] = pd.Categorical(df_harian['Hari'], categories=hari_order, ordered=True)
-            df_harian = df_harian.sort_values('Hari')
-            
-            st.markdown("<h3 class='fade-in'>Rata-rata Penjualan per Hari</h3>", unsafe_allow_html=True)
-            st.dataframe(df_harian)
-            
-            fig, ax = plt.subplots(figsize=(10, 5))
-            ax.bar(df_harian['Hari'], df_harian['Produk_Terjual'], color='#A23B72')
-            plt.title('Rata-rata Penjualan per Hari', fontweight='bold')
-            plt.xlabel('Hari')
-            plt.ylabel('Rata-rata Jumlah Terjual')
-            plt.xticks(rotation=45)
-            ax.set_facecolor('#FFFFFF')
-            plt.gcf().set_facecolor('#FFFFFF')
-            plt.tight_layout()
-            st.pyplot(fig)
     
     elif page == "Tentang":
         st.markdown("<h2 class='fade-in'>Tentang Xila Studio</h2>", unsafe_allow_html=True)
